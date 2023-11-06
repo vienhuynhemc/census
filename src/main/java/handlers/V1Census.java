@@ -99,4 +99,31 @@ public class V1Census {
         LOG.info("Số lượng người từ 60 tuổi trở lên: " + result.get());
     }
 
+    public void statisticsOnPeopleAged16AndUnder() {
+        LocalDate currentDate = LocalDate.now();
+
+        AtomicInteger result = new AtomicInteger();
+        families.forEach(family -> family.getPeople().forEach(people -> {
+            if (ChronoUnit.YEARS.between(people.getDob(), currentDate) <= 16) {
+                result.getAndIncrement();
+            }
+        }));
+
+        LOG.info("Số lượng người từ 16 tuổi trở xuống: " + result.get());
+    }
+
+    public void statisticsOnPeopleAgedBetween16And60() {
+        LocalDate currentDate = LocalDate.now();
+
+        AtomicInteger result = new AtomicInteger();
+        families.forEach(family -> family.getPeople().forEach(people -> {
+            long age = ChronoUnit.YEARS.between(people.getDob(), currentDate);
+            if (age > 16 && age < 60) {
+                result.getAndIncrement();
+            }
+        }));
+
+        LOG.info("Số lượng người trên 16 tuổi & dưới 60 tuổi: " + result.get());
+    }
+
 }

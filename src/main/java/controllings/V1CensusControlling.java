@@ -10,6 +10,10 @@ public class V1CensusControlling {
         V1Census v1Census = createV1Census();
         v1Census.load();
 
+        v1Census.statisticsOnPeopleAged16AndUnder();
+
+        v1Census.statisticsOnPeopleAgedBetween16And60();
+
         v1Census.statisticsOnPeopleAged60AndOver();
     }
 
