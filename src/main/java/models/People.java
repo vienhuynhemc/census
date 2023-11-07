@@ -14,4 +14,5 @@ import java.time.LocalDate;
 public class People {
     private String name;
     private LocalDate dob;
+    private String relationship;
 }

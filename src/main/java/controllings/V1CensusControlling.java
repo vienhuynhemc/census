@@ -15,6 +15,12 @@ public class V1CensusControlling {
         v1Census.statisticsOnPeopleAgedBetween16And60();
 
         v1Census.statisticsOnPeopleAged60AndOver();
+
+        v1Census.statisticsFamiliesHavePeopleAgedAged16AndUnder();
+
+        v1Census.statisticsFamiliesHavePeopleAged60AndOver();
+
+        v1Census.statisticsFamilyHaveOnlyOneParentLivingWithTheChildren();
     }
 
     private V1Census createV1Census() {

@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -76,7 +78,9 @@ public class V1Census {
             String name = row.getCell(3).getStringCellValue();
             String dobString = row.getCell(5).getStringCellValue();
             LocalDate dob = LocalDate.parse(dobString, dobString.length() == 4 ? YYYY : DD_MM_YYYY);
-            People person = new People(name, dob);
+            String relationship = row.getCell(8).getStringCellValue().trim();
+
+            People person = new People(name, dob, relationship);
 
             people.add(person);
         });
@@ -124,6 +128,38 @@ public class V1Census {
         }));
 
         LOG.info("Số lượng người trên 16 tuổi & dưới 60 tuổi: " + result.get());
+    }
+
+    public void statisticsFamiliesHavePeopleAged60AndOver() {
+        LocalDate currentDate = LocalDate.now();
+
+        AtomicInteger result = new AtomicInteger();
+        families.forEach(family -> {
+            if (family.getPeople().stream().anyMatch(people -> ChronoUnit.YEARS.between(people.getDob(), currentDate) >= 60)) {
+                result.getAndIncrement();
+            }
+        });
+
+        LOG.info("Số lượng gia đình người từ 60 tuổi trở lên: " + result.get());
+    }
+
+    public void statisticsFamiliesHavePeopleAgedAged16AndUnder() {
+        LocalDate currentDate = LocalDate.now();
+
+        AtomicInteger result = new AtomicInteger();
+        families.forEach(family -> {
+            if (family.getPeople().stream().anyMatch(people -> ChronoUnit.YEARS.between(people.getDob(), currentDate) <=16)) {
+                result.getAndIncrement();
+            }
+        });
+
+        LOG.info("Số lượng gia đình người từ 16 tuổi trở xuống: " + result.get());
+    }
+
+    public void statisticsFamilyHaveOnlyOneParentLivingWithTheChildren() {
+        Set<String> set = new HashSet<>();
+        families.forEach(family -> family.getPeople().forEach(people -> set.add(people.getRelationship())));
+        System.out.println(set);
     }
 
 }
