@@ -21,12 +21,12 @@ public class V1CensusControlling {
         v1Census.statisticsFamiliesHavePeopleAged60AndOver();
 
         v1Census.statisticsFamilyHaveOnlyOneParentLivingWithTheChildren();
+
+        v1Census.statisticsNumberOfGeneration();
     }
 
     private V1Census createV1Census() {
-        return V1Census.createInstance()
-                .ofFile("D:/projects/census/src/main/resources/data.xls")
-                .ofSheet("bhxh_dkth0203");
+        return V1Census.createInstance().ofFile("D:/projects/census/src/main/resources/data.xls").ofSheet("bhxh_dkth0203");
     }
 
 }

@@ -148,7 +148,7 @@ public class V1Census {
 
         AtomicInteger result = new AtomicInteger();
         families.forEach(family -> {
-            if (family.getPeople().stream().anyMatch(people -> ChronoUnit.YEARS.between(people.getDob(), currentDate) <=16)) {
+            if (family.getPeople().stream().anyMatch(people -> ChronoUnit.YEARS.between(people.getDob(), currentDate) <= 16)) {
                 result.getAndIncrement();
             }
         });
@@ -157,9 +157,120 @@ public class V1Census {
     }
 
     public void statisticsFamilyHaveOnlyOneParentLivingWithTheChildren() {
-        Set<String> set = new HashSet<>();
-        families.forEach(family -> family.getPeople().forEach(people -> set.add(people.getRelationship())));
-        System.out.println(set);
+        Set<String> roles = Set.of("Con", "Mẹ", "Bố", "Chủ hộ");
+        AtomicInteger result = new AtomicInteger();
+
+        families.forEach(family -> {
+            boolean isValid = true;
+
+            Set<String> rolesOfFamily = new HashSet<>();
+            for (People person : family.getPeople()) {
+                rolesOfFamily.add(person.getRelationship().trim());
+                if (!roles.contains(person.getRelationship())) {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            if (rolesOfFamily.size() == 2) {
+                result.getAndIncrement();
+            }
+        });
+
+        LOG.info("Số hộ gia đình chỉ có cha hoặc mẹ sống chung với con: " + result.get());
+    }
+
+    public void statisticsNumberOfGeneration() {
+        Set<String> zeroGeneration = Set.of("Bà");
+        Set<String> oneGeneration = Set.of("Mẹ", "Bố");
+        Set<String> twoGeneration = Set.of("Chị", "Em", "Vợ", "Chồng", "Anh");
+        Set<String> threeGeneration = Set.of("Con", "Con dâu", "Con dể");
+        Set<String> fourGeneration = Set.of("Cháu");
+        Set<String> fiveGeneration = Set.of("Chắt");
+
+        int unKnow = 0;
+        int firstGeneration = 0;
+        int secondGeneration = 0;
+        int thirdGeneration = 0;
+
+        for (Family family : families) {
+            boolean isZero = false;
+            boolean isOne = false;
+            boolean isTwo = false;
+            boolean isThree = false;
+            boolean isFour = false;
+            boolean isFive = false;
+
+            for (People person : family.getPeople()) {
+                String relation = person.getRelationship().trim();
+                if (relation.equals("Khác")) {
+                    unKnow++;
+                    break;
+                }
+
+                if (!isZero && (zeroGeneration.contains(relation))) {
+                    isZero = true;
+                }
+
+                if (!isOne && (oneGeneration.contains(relation))) {
+                    isOne = true;
+                }
+
+                if (!isTwo && (twoGeneration.contains(relation))) {
+                    isTwo = true;
+                }
+
+                if (!isThree && (threeGeneration.contains(relation))) {
+                    isThree = true;
+                }
+
+                if (!isFour && (fourGeneration.contains(relation))) {
+                    isFour = true;
+                }
+
+                if (!isFive && (fiveGeneration.contains(relation))) {
+                    isFive = true;
+                }
+            }
+
+            int numberOfGeneration = 0;
+            if (isZero) {
+                numberOfGeneration++;
+            }
+            if (isOne) {
+                numberOfGeneration++;
+            }
+            if (isTwo) {
+                numberOfGeneration++;
+            }
+            if (isThree) {
+                numberOfGeneration++;
+            }
+            if (isFour) {
+                numberOfGeneration++;
+            }
+            if (isFive) {
+                numberOfGeneration++;
+            }
+            if (numberOfGeneration == 1) {
+                firstGeneration++;
+            } else if (numberOfGeneration == 2) {
+                secondGeneration++;
+            } else if (numberOfGeneration == 3) {
+                thirdGeneration++;
+            } else {
+                unKnow++;
+            }
+        }
+
+        LOG.info("Số gia đình 1 thế hệ: " + firstGeneration);
+        LOG.info("Số gia đình 2 thế hệ: " + secondGeneration);
+        LOG.info("Số gia đình 3 thế hệ: " + thirdGeneration);
+        LOG.info("Số gia đình khác: " + unKnow);
     }
 
 }
